@@ -35,12 +35,4 @@ public class Booking {
 
     Item item;
     User booker;
-    Status status;
-}
-
-enum Status {
-    WAITING,
-    APPROVED,
-    REJECTED,
-    CANCELED
 }
