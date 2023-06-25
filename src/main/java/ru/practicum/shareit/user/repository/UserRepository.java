@@ -7,8 +7,8 @@ import ru.practicum.shareit.user.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findUserByEmail(String email);
 
+    User findUserByEmail(String email);
 
     @Query(
             "SELECT CASE WHEN COUNT(u) > 0 THEN " +
