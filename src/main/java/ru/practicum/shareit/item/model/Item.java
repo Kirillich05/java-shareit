@@ -3,32 +3,40 @@ package ru.practicum.shareit.item.model;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
+import javax.persistence.*;
 
 /**
  * TODO Sprint add-controllers.
  */
+@Entity
+@Table(name = "items", schema = "public")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Item {
 
-    @PositiveOrZero
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @NotNull
+    @Column
     String name;
 
-    @NotNull
+    @Column
     String description;
 
-    @NotNull
+    @Column(name = "is_available")
     Boolean available;
 
-    @NotNull
-    long owner;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    User owner;
 
+    @ManyToOne
+    @JoinColumn(name = "request_id", referencedColumnName = "id")
     ItemRequest request;
 }
