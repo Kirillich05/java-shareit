@@ -3,17 +3,18 @@ package ru.practicum.shareit.user.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.BadRequestException;
-import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@Transactional(readOnly = true)
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
@@ -29,11 +30,9 @@ public class UserServiceImpl implements UserService {
         return findOrThrow(id);
     }
 
+    @Transactional
     @Override
     public User addUser(User user) {
-        if (isExistedEmail(user.getEmail())) {
-            throw new ConflictException("email is existed");
-        }
         if (user.getEmail() == null ||
                 user.getName() == null) {
             throw new BadRequestException("no name and email");
@@ -41,6 +40,7 @@ public class UserServiceImpl implements UserService {
         return repo.save(user);
     }
 
+    @Transactional
     @Override
     public User updateUser(long id, UserDto userDto) {
         var user = findOrThrow(id);
@@ -51,16 +51,12 @@ public class UserServiceImpl implements UserService {
         }
 
         if (userForUpgrade.getName() != null) user.setName(userForUpgrade.getName());
-
-        if (isExistedEmail(userForUpgrade.getEmail())) {
-            throw new ConflictException("email is existed");
-        }
-
         if (userForUpgrade.getEmail() != null) user.setEmail(userForUpgrade.getEmail());
 
         return repo.save(user);
     }
 
+    @Transactional
     @Override
     public void removeUserById(long id) {
         repo.deleteById(id);
@@ -72,12 +68,5 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(
                         () -> new NotFoundException("User by id " + id + " was not found")
                 );
-    }
-
-    private boolean isExistedEmail(String email) {
-        List<User> users = repo.findAll();
-        boolean flag = users.stream()
-                .anyMatch(repoUser -> repoUser.getEmail().equals(email));
-        return flag;
     }
 }

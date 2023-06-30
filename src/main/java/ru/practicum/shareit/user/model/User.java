@@ -2,25 +2,32 @@ package ru.practicum.shareit.user.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.validator.constraints.Email;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.PositiveOrZero;
+import javax.persistence.*;
+
+
 
 /**
  * TODO Sprint add-controllers.
  */
+@Entity
+@Table(name = "users", schema = "public")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class User {
 
-    @PositiveOrZero
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
+    @Column
     String name;
 
-    @NotEmpty
     @Email
+    @Column
     String email;
 }

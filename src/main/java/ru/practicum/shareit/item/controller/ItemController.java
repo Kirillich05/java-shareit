@@ -3,13 +3,15 @@ package ru.practicum.shareit.item.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.CommentMapper;
 import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * TODO Sprint add-controllers.
@@ -24,18 +26,16 @@ public class ItemController {
     private final ItemService service;
 
     @GetMapping
-    public List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") long userId) {
-        log.info("Getting items list");
-        return service.getItemsByOwner(userId)
-                .stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+    public List<ItemBookingDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId) {
+        log.info("Getting all items");
+        return service.getAllItems(userId);
     }
 
-    @GetMapping("/{id}")
-    public ItemDto getItemById(@PathVariable("id") long id) {
-        log.info("Getting item by id " + id);
-        return ItemMapper.toItemDto(service.getItemById(id));
+    @GetMapping("/{itemId}")
+    public ItemBookingDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
+                               @PathVariable long itemId) {
+        log.info("Getting item by id " + itemId);
+        return service.getItemById(userId, itemId);
     }
 
     @PostMapping
@@ -62,5 +62,14 @@ public class ItemController {
     public List<ItemDto> search(@RequestParam String text) {
         log.info("Searching " + text);
         return service.search(text);
+    }
+
+    @PostMapping("/{id}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
+                                 @PathVariable("id") long itemId,
+                                 @Valid @RequestBody CommentDto commentDto) {
+        log.info("Comment was created");
+        var comment = service.addComment(userId, itemId, commentDto);
+        return CommentMapper.toCommentDto(comment);
     }
 }
