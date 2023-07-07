@@ -10,6 +10,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.ItemRequestMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoRequire;
@@ -38,6 +39,8 @@ public class ItemRequestServiceImplTest {
     private UserServiceImpl userService;
     @Mock
     private ItemRequestRepository repo;
+    @Mock
+    private ItemRepository itemRepository;
 
 
     private ItemRequestDtoRequire itemRequestDtoRequire;
