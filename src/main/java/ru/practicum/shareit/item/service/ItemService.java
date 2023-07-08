@@ -10,17 +10,15 @@ import java.util.List;
 
 public interface ItemService {
 
-    List<Item> getItemsByOwner(long ownerId);
-
     ItemBookingDto getItemById(long userId, long itemId);
 
     Item addItem(ItemDto itemDto, long userId);
 
     Item updateItem(long id, ItemDto itemDto, long userId);
 
-    List<ItemDto> search(String text);
+    List<ItemDto> search(String text, int from, int size);
 
-    List<ItemBookingDto> getAllItems(long userId);
+    List<ItemBookingDto> getAllItems(long userId, int from, int size);
 
     Comment addComment(long userId, long itemId, CommentDto commentDto);
 }

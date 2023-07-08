@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
@@ -17,6 +18,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
@@ -32,23 +34,17 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
-    public List<ItemBookingDto> getAllItems(long userId) {
+    public List<ItemBookingDto> getAllItems(long userId, int from, int size) {
         userService.getUserById(userId);
-        return itemRepo.findAllByOwnerId(userId)
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        return itemRepo.findAllByOwnerId(userId, page)
                 .stream()
                 .sorted(Comparator.comparing(Item::getId))
                 .map(ItemMapper::toItemBookingDto)
                 .map(this::setItemBookingWithComments)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Item> getItemsByOwner(long ownerId) {
-        return itemRepo.findAll()
-                .stream()
-                .filter(item -> item.getOwner().getId() == ownerId)
                 .collect(Collectors.toList());
     }
 
@@ -75,6 +71,13 @@ public class ItemServiceImpl implements ItemService {
 
         var owner = userService.getUserById(userId);
         var item = ItemMapper.toItem(itemDto, owner);
+
+        if (itemDto.getRequestId() != null) {
+            var itemRequest = itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Not found item request id " + itemDto.getRequestId()));
+            item.setRequest(itemRequest);
+        }
+
         return itemRepo.save(item);
     }
 
@@ -95,12 +98,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> search(String text) {
+    public List<ItemDto> search(String text, int from, int size) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
 
-        return itemRepo.search(text)
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+
+        return itemRepo.search(text, page)
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());

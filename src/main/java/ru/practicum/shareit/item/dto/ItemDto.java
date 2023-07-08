@@ -9,10 +9,13 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
+@Builder
 public class ItemDto {
 
     long id;
     String name;
     String description;
     Boolean available;
+    Long requestId;
 }
