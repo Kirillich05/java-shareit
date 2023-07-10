@@ -40,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemBookingDto> getAllItems(long userId, int from, int size) {
         userService.getUserById(userId);
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        return itemRepo.findAllByOwnerId(userId, page)
+        return itemRepo.findAllByOwnerIdOrderById(userId, page)
                 .stream()
                 .sorted(Comparator.comparing(Item::getId))
                 .map(ItemMapper::toItemBookingDto)

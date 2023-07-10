@@ -120,7 +120,7 @@ class ItemServiceImplTest {
         assertThrows(NotFoundException.class,
                 () -> service.getAllItems(imaginaryUserId, 0, size));
 
-        verify(itemRepository, never()).findAllByOwnerId(imaginaryUserId, page);
+        verify(itemRepository, never()).findAllByOwnerIdOrderById(imaginaryUserId, page);
     }
 
     @Test
@@ -129,7 +129,7 @@ class ItemServiceImplTest {
 
         when(userService.getUserById(user.getId()))
                 .thenReturn(user);
-        when(itemRepository.findAllByOwnerId(user.getId(), pageable))
+        when(itemRepository.findAllByOwnerIdOrderById(user.getId(), pageable))
                 .thenReturn(pageOfItems);
         when(commentRepository.findAllByItemId(item.getId()))
                 .thenReturn(List.of(comment));
