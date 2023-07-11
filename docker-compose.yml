@@ -29,9 +29,12 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=P@ssw0rd
+      - DB_HOST=db
+      - DB_PORT=6541
+      - DB_NAME=shareit
 
   db:
-    image: postgres:15-alpine
+    image: postgres:13.7-alpine
     container_name: shareit-db
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
